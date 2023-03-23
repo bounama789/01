@@ -1,40 +1,61 @@
 package utils
 
 type Stack struct {
-	alias rune
-	data []int
+	Alias rune
+	Data []int
 }
 
-var operations = new([]string)
+var Operations = new([]string)
 var optList = new([]string)
 
-func (stack Stack) PushToTopOf(otherStack Stack) {
-	var temp = make([]int, len(otherStack.data)+1)
-	temp[0] = stack.data[0]
-	stack.data = stack.data[1:]
-	for i, v := range otherStack.data {
+func (stack Stack) PushToTopOf(otherStack Stack) (Stack,Stack) {
+	var temp = make([]int, len(stack.Data)+1)
+	temp[0] = otherStack.Data[0]
+	otherStack.Data = otherStack.Data[1:]
+	for i, v := range stack.Data {
 		temp[i+1] = v
 	}
-	otherStack.data = temp
+	stack.Data = temp
 	
-	*operations = append(*operations, "p"+string(otherStack.alias))
+	*Operations = append(*Operations, "p"+string(stack.Alias))
+
+	return stack,otherStack
 }
 
 func (stack Stack) SwapfirstTwo() {
-	stack.data[0],stack.data[1] = stack.data[1],stack.data[0]
+	stack.Data[0],stack.Data[1] = stack.Data[1],stack.Data[0]
 
-	op:="s"+string(stack.alias)
-	temp := *operations
+	op:="s"+string(stack.Alias)
+	temp := *Operations
 
-	if len(*operations )> 0 && isLastSame(op){
+	if len(*Operations )> 0 && isLastSame(op){
 		temp = temp[:len(temp)-1]
-		*operations = append(temp, op)
+		*Operations = append(temp, "ss")
+	} else {
+		*Operations = append(temp, op)
 	}
-	*operations = append(temp, op)
+	
+}
+
+func (stack Stack) RotateStack() Stack {
+	temp := stack.Data[0]
+	stack.Data = stack.Data[1:]
+	stack.Data = append(stack.Data,temp)
+
+	op:="r"+string(stack.Alias)
+	opTemp := *Operations
+
+	if len(*Operations )> 0 && isLastSame(op){
+		opTemp = opTemp[:len(opTemp)-1]
+		*Operations = append(opTemp, "rr")
+	} else {
+		*Operations = append(opTemp, op)
+	}
+	return stack
 }
 
 func isLastSame(op string) bool {
-	temp := *operations
+	temp := *Operations
 	lastOp := temp[len(temp)-1]
 	if op[:len(op)-1] ==  lastOp[:len(lastOp)-1] && op[len(op)-1] != lastOp[len(lastOp)-1] {
 		return true
