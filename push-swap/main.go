@@ -8,15 +8,16 @@ import (
 func main() {
 	var a = utils.Stack{
 		Alias: 'a',
-		Data:  []int{2, 1, 3, 6, 5, 8},
+		Data:  []int{3 ,2 ,4 ,9, 5},
 	}
 	var b = utils.Stack{
 		Alias: 'b',
 		Data:  nil,
 	}
 
-	if utils.Sort(a, b) {
+	sorted,sortedStack := utils.Sort(a, b)
+	if sorted {
 		fmt.Println(*utils.Operations)
-		fmt.Println(a)
-	}
+		fmt.Println(sortedStack)}
+	
 }

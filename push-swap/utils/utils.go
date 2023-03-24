@@ -129,32 +129,62 @@ func isSortedDesc(f func(a, b int) int, a []int) bool {
 	return true
 }
 
-func Sort(a Stack, b Stack) bool {
+var i int
+
+func Sort(a Stack, b Stack) (bool, Stack) {
 	var chunck [][]int
 
-	for !isSortedAsc(checker, a.Data) || len(b.Data) != 0 {
+	for !isSortedAsc(checker, a.Data) {
 		median := Median(a.Data)
 		if len(a.Data) > 2 {
 			var c []int
+			if len(a.Data) > 1 && a.Data[0] > a.Data[1] {
+				a.SwapfirstTwo()
+				if isSortedAsc(checker,a.Data) {
+					break
+				}
+			}
 			for valLessthanMedian(a.Data, median) {
 				if a.Data[0] < median {
 					c = append(c, a.Data[0])
 					b, a = b.PushToTopOf(a)
+					if isSortedAsc(checker,a.Data) {
+						break
+					}
+					if len(b.Data) > 1 && b.Data[0] < b.Data[1] {
+						b.SwapfirstTwo()
+						if isSortedAsc(checker,a.Data) {
+							break
+						}
+					}
+
 				} else {
 					if a.Data[len(a.Data)-1] < median {
 						a = a.ReverseRotateStack()
+						if isSortedAsc(checker,a.Data) {
+							break
+						}
 					} else {
-						a = a.RotateStack()
+						if len(a.Data) == 3 && a.Data[1] < median {
+							a.SwapfirstTwo()
+						}else {
+							a = a.RotateStack()
+
+						}
+						if isSortedAsc(checker,a.Data) {
+							break
+						}
 					}
 				}
 			}
+
 			sortIntegerTable(c)
 			chunck = append(chunck, c)
 		} else {
 			if !isSortedAsc(checker, a.Data) {
 				a.SwapfirstTwo()
 			}
-			var i = len(chunck) - 1
+			i = len(chunck) - 1
 			for len(b.Data) > 0 {
 				median := Median(chunck[i])
 				if len(chunck[i]) == 1 {
@@ -165,24 +195,24 @@ func Sort(a Stack, b Stack) bool {
 				if !isSortedDesc(checker, b.Data) {
 					var nrotate int
 
-						for valGreatthanMedian(b.Data, median) {
-							if b.Data[0] > median {
-								a, b = a.PushToTopOf(b)
+					for valGreatthanMedian(b.Data, median) {
+						if b.Data[0] > median {
+							a, b = a.PushToTopOf(b)
 
-								if len(chunck[i]) > 1 {
-									chunck[i] = chunck[i][:len(chunck[i])-1]
-								}
-							} else {
-								b = b.RotateStack()
-								nrotate++
+							if len(chunck[i]) > 1 {
+								chunck[i] = chunck[i][:len(chunck[i])-1]
 							}
+						} else {
+							b = b.RotateStack()
+							nrotate++
 						}
-						if len(chunck[i]) == 2 {
-							b.SwapfirstTwo()
-							a, b = a.PushToTopOf(b)
-							a, b = a.PushToTopOf(b)
-							chunck[i] = nil
-						}
+					}
+					if len(chunck[i]) == 2 {
+						b.SwapfirstTwo()
+						a, b = a.PushToTopOf(b)
+						a, b = a.PushToTopOf(b)
+						chunck[i] = nil
+					}
 					if nrotate != 0 {
 						for i := 0; i < len(chunck[i]); i++ {
 							b = b.ReverseRotateStack()
@@ -200,7 +230,52 @@ func Sort(a Stack, b Stack) bool {
 		}
 
 	}
-	return true
+
+	if len(b.Data) > 0 {
+		for len(b.Data) > 0 {
+			median := Median(chunck[i])
+			if len(chunck[i]) == 1 {
+				a, b = a.PushToTopOf(b)
+				i--
+				continue
+			}
+			if !isSortedDesc(checker, b.Data) {
+				var nrotate int
+
+				for valGreatthanMedian(b.Data, median) {
+					if b.Data[0] > median {
+						a, b = a.PushToTopOf(b)
+
+						if len(chunck[i]) > 1 {
+							chunck[i] = chunck[i][:len(chunck[i])-1]
+						}
+					} else {
+						b = b.RotateStack()
+						nrotate++
+					}
+				}
+				if len(chunck[i]) == 2 {
+					b.SwapfirstTwo()
+					a, b = a.PushToTopOf(b)
+					a, b = a.PushToTopOf(b)
+					chunck[i] = nil
+				}
+				if nrotate != 0 {
+					for i := 0; i < len(chunck[i]); i++ {
+						b = b.ReverseRotateStack()
+						continue
+					}
+				}
+				if i > 0 {
+					i--
+				}
+			} else {
+				a, b = a.PushToTopOf(b)
+			}
+		}
+
+	}
+	return true, a
 }
 
 func valLessthanMedian(data []int, median int) bool {
