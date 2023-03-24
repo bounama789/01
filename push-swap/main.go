@@ -8,7 +8,7 @@ import (
 func main() {
 	var a = utils.Stack{
 		Alias: 'a',
-		Data:  []int{2, 3, 5, 12, 10, 6,9,7,4,1,8,11},
+		Data:  []int{2, 1, 3, 6, 5, 8},
 	}
 	var b = utils.Stack{
 		Alias: 'b',

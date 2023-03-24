@@ -165,7 +165,6 @@ func Sort(a Stack, b Stack) bool {
 				if !isSortedDesc(checker, b.Data) {
 					var nrotate int
 
-					for len(chunck[i]) > 0 {
 						for valGreatthanMedian(b.Data, median) {
 							if b.Data[0] > median {
 								a, b = a.PushToTopOf(b)
@@ -173,25 +172,26 @@ func Sort(a Stack, b Stack) bool {
 								if len(chunck[i]) > 1 {
 									chunck[i] = chunck[i][:len(chunck[i])-1]
 								}
+							} else {
+								b = b.RotateStack()
+								nrotate++
 							}
 						}
 						if len(chunck[i]) == 2 {
 							b.SwapfirstTwo()
 							a, b = a.PushToTopOf(b)
 							a, b = a.PushToTopOf(b)
-								chunck[i] = nil
-						} else {
-							b = b.RotateStack()
-							nrotate++
-						}					
+							chunck[i] = nil
+						}
+					if nrotate != 0 {
+						for i := 0; i < len(chunck[i]); i++ {
+							b = b.ReverseRotateStack()
+							continue
+						}
 					}
-					if nrotate !=0 {
-						for i:=0; i<len(chunck[i]); i++{
-						b=b.ReverseRotateStack()
+					if i > 0 {
+						i--
 					}
-					}
-					
-					i--
 				} else {
 					a, b = a.PushToTopOf(b)
 				}
