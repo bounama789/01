@@ -5,33 +5,18 @@ import (
 	"push-swap/utils"
 )
 
-
-
-func main()  {
-	var a = utils.Stack {
+func main() {
+	var a = utils.Stack{
 		Alias: 'a',
-		Data: []int{1,2,3,4,5,6,7,8,9,10,11,12,13,14},
+		Data:  []int{2, 3, 5, 12, 10, 6,9,7,4,1,8,11},
 	}
 	var b = utils.Stack{
 		Alias: 'b',
-		Data: nil,
+		Data:  nil,
 	}
 
-	a.SwapfirstTwo()
-	
-	b,a = b.PushToTopOf(a)
-	
-	b,a = b.PushToTopOf(a)
-	b,a = b.PushToTopOf(a)
-
-a.SwapfirstTwo()
-b.SwapfirstTwo()
-a=a.RotateStack()
-b=b.RotateStack()
-
-
-	fmt.Println(b)
-	fmt.Println(a)
-	fmt.Println(*utils.Operations)
-
+	if utils.Sort(a, b) {
+		fmt.Println(*utils.Operations)
+		fmt.Println(a)
+	}
 }
