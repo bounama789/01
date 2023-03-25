@@ -1,6 +1,12 @@
 package utils
 
-import "sort"
+import (
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
 
 type Stack struct {
 	Alias rune
@@ -36,7 +42,6 @@ func (stack Stack) SwapfirstTwo() {
 	} else {
 		*Operations = append(temp, op)
 	}
-
 }
 
 func (stack Stack) RotateStack() Stack {
@@ -102,15 +107,15 @@ func sortIntegerTable(table []int) {
 	}
 }
 
-func checker(a, b int) int {
+func Compare(a, b int) int {
 	return a - b
 }
 
-func isSortedAsc(f func(a, b int) int, a []int) bool {
+func IsSortedAsc(f func(a, b int) int, a []int) bool {
 	asc := true
 	for i, v := range a {
 		if i < len(a)-1 {
-			if checker(v, a[i+1]) > 0 {
+			if Compare(v, a[i+1]) > 0 {
 				asc = false
 			}
 		}
@@ -121,7 +126,7 @@ func isSortedAsc(f func(a, b int) int, a []int) bool {
 func isSortedDesc(f func(a, b int) int, a []int) bool {
 	for i, v := range a {
 		if i < len(a)-1 {
-			if checker(v, a[i+1]) < 0 {
+			if Compare(v, a[i+1]) < 0 {
 				return false
 			}
 		}
@@ -134,13 +139,17 @@ var i int
 func Sort(a Stack, b Stack) (bool, Stack) {
 	var chunck [][]int
 
-	for !isSortedAsc(checker, a.Data) {
+	if IsSortedAsc(Compare, a.Data) {
+		return true, a
+	}
+
+	for !IsSortedAsc(Compare, a.Data) {
 		median := Median(a.Data)
 		if len(a.Data) > 2 {
 			var c []int
 			if len(a.Data) > 1 && a.Data[0] > a.Data[1] {
 				a.SwapfirstTwo()
-				if isSortedAsc(checker,a.Data) {
+				if IsSortedAsc(Compare, a.Data) {
 					break
 				}
 			}
@@ -148,12 +157,12 @@ func Sort(a Stack, b Stack) (bool, Stack) {
 				if a.Data[0] < median {
 					c = append(c, a.Data[0])
 					b, a = b.PushToTopOf(a)
-					if isSortedAsc(checker,a.Data) {
+					if IsSortedAsc(Compare, a.Data) {
 						break
 					}
 					if len(b.Data) > 1 && b.Data[0] < b.Data[1] {
 						b.SwapfirstTwo()
-						if isSortedAsc(checker,a.Data) {
+						if IsSortedAsc(Compare, a.Data) {
 							break
 						}
 					}
@@ -161,17 +170,17 @@ func Sort(a Stack, b Stack) (bool, Stack) {
 				} else {
 					if a.Data[len(a.Data)-1] < median {
 						a = a.ReverseRotateStack()
-						if isSortedAsc(checker,a.Data) {
+						if IsSortedAsc(Compare, a.Data) {
 							break
 						}
 					} else {
 						if len(a.Data) == 3 && a.Data[1] < median {
 							a.SwapfirstTwo()
-						}else {
+						} else {
 							a = a.RotateStack()
 
 						}
-						if isSortedAsc(checker,a.Data) {
+						if IsSortedAsc(Compare, a.Data) {
 							break
 						}
 					}
@@ -181,54 +190,11 @@ func Sort(a Stack, b Stack) (bool, Stack) {
 			sortIntegerTable(c)
 			chunck = append(chunck, c)
 		} else {
-			if !isSortedAsc(checker, a.Data) {
+			if !IsSortedAsc(Compare, a.Data) {
 				a.SwapfirstTwo()
 			}
 			i = len(chunck) - 1
-			// for len(b.Data) > 0 {
-			// 	median := Median(chunck[i])
-			// 	if len(chunck[i]) == 1 {
-			// 		a, b = a.PushToTopOf(b)
-			// 		i--
-			// 		continue
-			// 	}
-			// 	if !isSortedDesc(checker, b.Data) {
-			// 		var nrotate int
-
-			// 		for valGreatthanMedian(b.Data, median) {
-			// 			if b.Data[0] > median {
-			// 				a, b = a.PushToTopOf(b)
-
-			// 				if len(chunck[i]) > 1 {
-			// 					chunck[i] = chunck[i][:len(chunck[i])-1]
-			// 				}
-			// 			} else {
-			// 				b = b.RotateStack()
-			// 				nrotate++
-			// 			}
-			// 		}
-			// 		if len(chunck[i]) == 2 {
-			// 			b.SwapfirstTwo()
-			// 			a, b = a.PushToTopOf(b)
-			// 			a, b = a.PushToTopOf(b)
-			// 			chunck[i] = nil
-			// 		}
-			// 		if nrotate != 0 {
-			// 			for i := 0; i < len(chunck[i]); i++ {
-			// 				b = b.ReverseRotateStack()
-			// 				continue
-			// 			}
-			// 		}
-			// 		if i > 0 {
-			// 			i--
-			// 		}
-			// 	} else {
-			// 		a, b = a.PushToTopOf(b)
-			// 	}
-			// }
-
 		}
-
 	}
 
 	if len(b.Data) > 0 {
@@ -239,7 +205,7 @@ func Sort(a Stack, b Stack) (bool, Stack) {
 				i--
 				continue
 			}
-			if !isSortedDesc(checker, b.Data) {
+			if !isSortedDesc(Compare, b.Data) {
 				var nrotate int
 
 				for valGreatthanMedian(b.Data, median) {
@@ -290,6 +256,61 @@ func valLessthanMedian(data []int, median int) bool {
 func valGreatthanMedian(data []int, median int) bool {
 	for _, v := range data {
 		if v > median {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckEntry(entry string) Stack {
+	entries := strings.Split(entry, " ")
+	var a = Stack{
+		'a',
+		nil,
+	}
+
+	for i := 0; i < len(entries); i++ {
+		v, err := strconv.Atoi(entries[i])
+		if err != nil {
+			fmt.Println("Error")
+			os.Exit(1)
+		}
+		a.Data = append(a.Data, v)
+	}
+	if hasDuplicate(a.Data) {
+		fmt.Println("Error")
+		os.Exit(1)
+	}
+	return a
+}
+
+func hasDuplicate(s []int) bool {
+	seen := make(map[int]bool)
+	for _, v := range s {
+		if seen[v] {
+			return true
+		}
+		seen[v] = true
+	}
+	return false
+}
+
+func CheckOperations(operations string) []string {
+	*optList = []string{"pa", "pb", "sa", "sb", "ra", "rb", "rra", "rrb", "ss", "rr", "rrr"}
+	opts := strings.Split(operations, "\n")
+	for _, v := range opts[:len(opts)-2] {
+		if !isOperation(v) {
+			println(v)
+			fmt.Println("Error")
+			os.Exit(1)
+		}
+	}
+	return opts[:len(opts)-1]
+}
+
+func isOperation(op string) bool {
+	for _, v := range *optList {
+		if op == v {
 			return true
 		}
 	}
