@@ -1,4 +1,4 @@
-package mathskills
+package main
 
 import (
 	"fmt"
