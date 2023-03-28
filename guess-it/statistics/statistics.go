@@ -60,6 +60,12 @@ func GetRange(data []float64) float64 {
 	return temp[len(temp)-1] - temp[0]
 }
 
+func GetVarCoef(r int,mean float64) int {
+	mean = math.Round(mean)
+
+	return r/
+}
+
 func GuessRange(input int,r int) []int {
 	return []int{input-r,input+r}
 }

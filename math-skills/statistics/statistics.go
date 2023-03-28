@@ -5,9 +5,11 @@ import (
 )
 
 func Median(data []float64) float64 {
-	sortIntegerTable(data)
-	if len(data)%2==0 {
-		return (data[int(len(data)/2)] +  data[int(len(data)/2)-1]) /2
+	temp := make([]float64, len(data))
+	copy(temp,data)
+	sortIntegerTable(temp)
+	if len(temp)%2==0 {
+		return (temp[int(len(temp)/2)] +  temp[int(len(temp)/2)-1]) /2
 	}
 
 	return data[int(len(data)/2)]
@@ -51,4 +53,15 @@ func tableSum(data []float64) int {
 		total += int(v)
 	}
 	return total
+}
+
+func GetRange(data []float64) float64 {
+	temp := make([]float64, len(data))
+		copy(temp,data)
+	sortIntegerTable(temp)
+	return temp[len(temp)-1] - temp[0]
+}
+
+func GuessRange(input int,r int) []int {
+	return []int{input-r,input+r}
 }
