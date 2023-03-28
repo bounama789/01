@@ -6,8 +6,8 @@ import (
 
 func Median(data []float64) float64 {
 	sortIntegerTable(data)
-	if len(data)%2==0 {
-		return (data[int(len(data)/2)] +  data[int(len(data)/2)-1]) /2
+	if len(data)%2 == 0 {
+		return (data[int(len(data)/2)] + data[int(len(data)/2)-1]) / 2
 	}
 
 	return data[int(len(data)/2)]
@@ -24,11 +24,11 @@ func Variance(data []float64) float64 {
 		mean := Mean(data)
 
 		c := v - mean
-		temp += c*c
+		temp += c * c
 
 	}
 
-	return temp/float64(len(data))
+	return temp / float64(len(data))
 }
 
 func Stdeviation(data []float64) float64 {
@@ -51,4 +51,15 @@ func tableSum(data []float64) int {
 		total += int(v)
 	}
 	return total
+}
+
+func GetRange(data []float64) float64 {
+	var temp []float64
+	copy(temp,data)
+	sortIntegerTable(temp)
+	return temp[len(temp)-1] - temp[0]
+}
+
+func GuessRange(input int,r int) []int {
+	return []int{input-r,input+r}
 }
