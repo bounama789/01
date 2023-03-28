@@ -11,11 +11,11 @@ import (
 func main() {
 	if len(os.Args) == 2 {
 		data := utils.GetData(os.Args[1])
-		mean := int(math.Round(statistics.Mean(data)))
-		variance := int(statistics.Variance(data))
-		std := int(statistics.Stdeviation(data))
-		median := int(statistics.Median(data))
+		mean := math.Round(statistics.Mean(data))
+		variance := int(math.Round(statistics.Variance(data)))
+		std := math.Round(statistics.Stdeviation(data))
+		median := math.Round(statistics.Median(data))
 
-		fmt.Printf("Average: %v\nMedian: %v\nVariance: %v\nStandard Deviation: %v", mean, median, variance, std)
+		fmt.Printf("Average: %v\nMedian: %v\nVariance: %v\nStandard Deviation: %v \n", mean, median, variance, std)
 	}
 }
