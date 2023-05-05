@@ -212,36 +212,36 @@ func Sort(a Stack, b Stack) (bool, Stack) {
 					if b.Data[0] > median {
 						a, b = a.PushToTopOf(b)
 
-						if len(chunck[i]) > 1 {
-							chunck[i] = chunck[i][:len(chunck[i])-1]
+								if len(chunck[i]) > 1 {
+									chunck[i] = chunck[i][:len(chunck[i])-1]
+								}
+							} else {
+								b = b.RotateStack()
+								nrotate++
+							}
 						}
-					} else {
-						b = b.RotateStack()
-						nrotate++
+						if len(chunck[i]) == 2 {
+							b.SwapfirstTwo()
+							a, b = a.PushToTopOf(b)
+							a, b = a.PushToTopOf(b)
+							chunck[i] = nil
+						}
+					if nrotate != 0 {
+						for i := 0; i < len(chunck[i]); i++ {
+							b = b.ReverseRotateStack()
+							continue
+						}
 					}
-				}
-				if len(chunck[i]) == 2 {
-					b.SwapfirstTwo()
-					a, b = a.PushToTopOf(b)
-					a, b = a.PushToTopOf(b)
-					chunck[i] = nil
-				}
-				if nrotate != 0 {
-					for i := 0; i < len(chunck[i]); i++ {
-						b = b.ReverseRotateStack()
-						continue
+					if i > 0 {
+						i--
 					}
+				} else {
+					a, b = a.PushToTopOf(b)
 				}
-				if i > 0 {
-					i--
-				}
-			} else {
-				a, b = a.PushToTopOf(b)
 			}
 		}
-
 	}
-	return true, a
+	return true
 }
 
 func valLessthanMedian(data []int, median int) bool {
@@ -256,61 +256,6 @@ func valLessthanMedian(data []int, median int) bool {
 func valGreatthanMedian(data []int, median int) bool {
 	for _, v := range data {
 		if v > median {
-			return true
-		}
-	}
-	return false
-}
-
-func CheckEntry(entry string) Stack {
-	entries := strings.Split(entry, " ")
-	var a = Stack{
-		'a',
-		nil,
-	}
-
-	for i := 0; i < len(entries); i++ {
-		v, err := strconv.Atoi(entries[i])
-		if err != nil {
-			fmt.Println("Error")
-			os.Exit(1)
-		}
-		a.Data = append(a.Data, v)
-	}
-	if hasDuplicate(a.Data) {
-		fmt.Println("Error")
-		os.Exit(1)
-	}
-	return a
-}
-
-func hasDuplicate(s []int) bool {
-	seen := make(map[int]bool)
-	for _, v := range s {
-		if seen[v] {
-			return true
-		}
-		seen[v] = true
-	}
-	return false
-}
-
-func CheckOperations(operations string) []string {
-	*optList = []string{"pa", "pb", "sa", "sb", "ra", "rb", "rra", "rrb", "ss", "rr", "rrr"}
-	opts := strings.Split(operations, "\n")
-	for _, v := range opts[:len(opts)-2] {
-		if !isOperation(v) {
-			println(v)
-			fmt.Println("Error")
-			os.Exit(1)
-		}
-	}
-	return opts[:len(opts)-1]
-}
-
-func isOperation(op string) bool {
-	for _, v := range *optList {
-		if op == v {
 			return true
 		}
 	}
