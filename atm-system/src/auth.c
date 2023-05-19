@@ -1,9 +1,9 @@
 #include <termios.h>
 #include "header.h"
 
-char *USERS = "./data/users.txt";
+char* USERS = "./data/users.txt";
 
-void loginMenu(struct User *u)
+void loginMenu(struct User* u)
 {
     struct termios oflags, nflags;
 
@@ -34,23 +34,27 @@ void loginMenu(struct User *u)
 };
 
 
-void registerMenu(struct User *u){
-    FILE * uf = fopen(USERS,"a+");
+void registerMenu(struct User* u) {
+    FILE* uf = fopen(USERS, "r+");
+
+    printf("%d", sizeof * uf);
 
     struct termios oflags, nflags;
 
     system("clear");
-    invalid:
 
     printf("\n\n\n\t\t\t\t   Bank Management System\n\t\t\t\t\t User Name:");
-        scanf("%s", u->name);
-            if (userExist(uf, u->name) == 1)
-            {
-                printf("✖ User with this name already exists\n\n");
-                goto invalid;
-            }
+    scanf("%s", u->name);
+    if (userExist(uf, u->name) == 1)
+    {
+        printf("✖ User with this name already exists\n\n");
+        sleep(1);
+            system("clear");
+            
+        initMenu(&u);
+    }
 
-    
+
 
     // disabling echo
     tcgetattr(fileno(stdin), &oflags);
@@ -63,34 +67,36 @@ void registerMenu(struct User *u){
         perror("tcsetattr");
         return exit(1);
     }
-    choosePass:
-        printf("\n\n\n\n\n\t\t\t\tChoose a password:");
-        scanf("%s", u->password);
-        printf("\n\n\n\n\n\t\t\t\tConfirm your password:");
+choosePass:
+    printf("\n\n\n\n\n\t\t\t\tChoose a password:");
+    scanf("%s", u->password);
+    printf("\n\n\n\n\n\t\t\t\tConfirm your password:");
 
-        char tPass[50];
-        scanf("%s", tPass);
-        if (strcmp(u->password,tPass) != 0)
-        {
-            printf("passwords doesn't match");
-            goto choosePass;
-        } else {
-            u->id = getLastUserIndex(USERS)+1;
-            saveUserToFile(uf,u);
-            fclose(uf);
-        }
-        // restore terminal
-        if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
-        {
-            perror("tcsetattr");
-            return exit(1);
-        }
+    char tPass[50];
+    scanf("%s", tPass);
+    if (strcmp(u->password, tPass) != 0)
+    {
+        printf("passwords doesn't match");
+        goto choosePass;
+    }
+    else {
+        printf("\nregistered\n");
+        u->id = getLastUserIndex() + 1;
+        saveUserToFile(uf, u);
+        fclose(uf);
+    }
+    // restore terminal
+    if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
+    {
+        perror("tcsetattr");
+        return exit(1);
+    }
 };
 
 
-const char *getPassword(struct User *u)
+const char* getPassword(struct User* u)
 {
-    FILE *fp = fopen("./data/users.txt", "r");
+    FILE* fp = fopen(USERS, "r");
     struct User userChecker;
 
     if (fp == NULL)
@@ -98,18 +104,18 @@ const char *getPassword(struct User *u)
         printf("Error! opening file");
         exit(1);
     }
-char line[100];
+    char line[100];
     while (fgets(line, sizeof(line), fp) != NULL)
     {
-        char * token = strtok(line," ");
-                    u->id = atoi(token);
+        char* token = strtok(line, " ");
+        u->id = atoi(token);
 
-        token = strtok(NULL," ");
+        token = strtok(NULL, " ");
         if (strcmp(token, u->name) == 0)
         {
             fclose(fp);
-            token = strtok(NULL," ");
-            token = strtok(token,"\n");
+            token = strtok(NULL, " ");
+            token = strtok(token, "\n");
             return token;
         }
     }
@@ -118,60 +124,75 @@ char line[100];
     return "no user found";
 };
 
-int getLastUserIndex(char* filename) {
-    FILE* fp = fopen(filename, "r");
-    if (fp == NULL) {
-        printf("Failed to open file %s\n", filename);
-        return -1;
+int getLastUserIndex()
+{
+    FILE* fp = fopen(USERS, "r");
+    fseek(fp, 0, SEEK_END);
+    long size = ftell(fp);
+    int index;
+    if (fp == NULL)
+    {
+        printf("Error! opening file");
+        exit(1);
     }
-
     char line[100];
-    char* second_last_line = NULL;
-    while (fgets(line, sizeof(line), fp) != NULL) {
-        if (second_last_line != NULL) {
-            free(second_last_line);  // free memory from previous iteration
-        }
-        second_last_line = strdup(line);  // make a copy of the current line
-    }
-    printf("SECOND: %s",second_last_line);
-    fclose(fp);
-    char  n = second_last_line[0];
 
-    int index = atoi(&n);
-    free(second_last_line);  // free memory from last iteration
-    return index;
+    if (size != 0)
+    {
+        fseek(fp,0,SEEK_SET);
+        while (fgets(line, sizeof(line), fp) != NULL)
+        {
+            char* token = strtok(line, " ");
+            index = atoi(token);
+        }
+        fclose(fp);
+            return index;
+    }
+        fclose(fp);
+        return 0;
 };
 
-void saveUserToFile(FILE *ptr, struct User *u)
+
+void saveUserToFile(FILE* ptr, struct User* u)
 {
     fprintf(ptr, "%d %s %s\n",
-	    u->id,
-	    &u->name,
+        u->id,
+        &u->name,
         &u->password);
 }
 
-int userExist(char userName[50])
+int userExist(FILE* ptr, char userName[50])
 {
-    FILE *ptr = fopen(USERS,"r+");
     char line[100];
 
-    while(fgets(line, sizeof(line),ptr) != NULL) {
-        char* token = strtok(line, " ");
-   token = strtok(NULL, " ");
+    if (ptr != NULL)
+    {
 
-        if (token != NULL && strcmp(token, userName) == 0) {
-            return 1;
-        }
+            while (fgets(line, sizeof(line), ptr) != NULL) {
+                char* token = strtok(line, " ");
+                token = strtok(NULL, " ");
+
+                if (token != NULL && strcmp(token, userName) == 0) {
+                    return 1;
+                }
+            }
+
     }
-    fclose(ptr);
     return 0;
 
 }
 
 int getUserFromFile(FILE* ptr, struct User* u)
 {
-    return fscanf(ptr, "%d %s %s",
-        &u->id,
-        u->name,
-        u->password) != EOF;
+    if (ptr != NULL)
+    {
+        long size = ftell(ptr);
+
+        if (0 != size) {
+            return fscanf(ptr, "%d %s %s",
+                &u->id,
+                u->name,
+                u->password) != EOF;
+        }
+    }
 }

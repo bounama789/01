@@ -23,7 +23,7 @@ void saveAccountToFile(FILE* ptr, struct User u, struct Record r)
 {
     r.isActive = 1;
     char* line = malloc(sizeof(char) * 250);
-    sprintf(line, "\n%d %d %s %d %d/%d/%d %s %d %.2lf %s %d\n",
+    sprintf(line, "%d %d %s %d %d/%d/%d %s %d %.2lf %s %d\n",
         getLastRecordIndex(RECORDS) + 1,
         u.id,
         u.name,

@@ -69,21 +69,16 @@ void initMenu(struct User* u)
     switch (opt)
     {
     case 1:
+    wrongPassword:
         loginMenu(u);
         char * name = u->name;
         char* b = getPassword(u);
-                printf("userId: %d\nuser: %s\n pass: %sn",u->id, u->name,b);
 
-
-        if (strcmp(u->password, b) == 0)
-        {
-            printf("%s \n %s", u->name, u->password);
-            printf("\n\nPassword Match!");
-        }
-        else
+        if (strcmp(u->password, b) != 0)
         {
             printf("\nWrong password!! or User Name\n");
-            exit(1);
+            sleep(1);
+           goto wrongPassword;
         }
         r = 1;
         break;
@@ -102,13 +97,13 @@ void initMenu(struct User* u)
 
 int main()
 {
-    struct User u = {
-        id:2,
-        name:"Billy",
-        password:"azerty"
-    };
+    struct User u ; //= {
+    //     id:2,
+    //     name:"Billy",
+    //     password:"azerty"
+    // };
 
-   // initMenu(&u);
+    initMenu(&u);
     mainMenu(&u);
 
     return 0;
