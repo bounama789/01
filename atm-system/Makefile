@@ -1,10 +1,8 @@
 objects = src/main.o src/system.o src/auth.o
 
-LDFLAGS = -lsqlite3
-
 
 atm : $(objects)
-	cc $(LDFLAGS) -o atm $(objects)
+	cc -o atm $(objects)
 
 main.o : src/header.h
 kbd.o : src/header.h
