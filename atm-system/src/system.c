@@ -1,6 +1,10 @@
 #include "header.h"
+#include <sqlite3.h>
 
 const char* RECORDS = "./data/records.txt";
+sqlite3 *db;
+
+
 
 int getAccountFromFile(FILE* ptr, struct Record* r)
 {
@@ -21,6 +25,19 @@ int getAccountFromFile(FILE* ptr, struct Record* r)
 
 void saveAccountToFile(FILE* ptr, struct User u, struct Record r)
 {
+    int rc = sqlite3_open("myDB",db);
+
+    if (rc != SQLITE_OK) {
+    printf("Error opening database: %s\n", sqlite3_errmsg(db));
+    sqlite3_close(db);
+    return;
+} else
+{
+        printf("All is OK\n");
+
+}
+
+
     r.isActive = 1;
     char* line = malloc(sizeof(char) * 250);
     sprintf(line, "\n%d %d %s %d %d/%d/%d %s %d %.2lf %s %d\n",
